@@ -1,49 +1,41 @@
 function initMap() {
-    const mapOptions = {
-        zoom: 12,
-        center: { lat: -23.5505, lng: -46.6333 } // Coordenadas de São Paulo, Brasil
-    };     
+    const center = { lat: -23.5505, lng: -46.6333 }; // Coordenadas de São Paulo, Brasil
 
-    const map = new google.maps.Map(document.getElementById('map'), mapOptions);
+    const map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 14,
+        center: center
+    });
 
-    const parkingLots = [
-        {
-            name: 'Estacionamento Central',
-            location: { lat: -23.5505, lng: -46.6333 },
-            address: 'Rua Principal, 123',
-            spaces: 150
-        },
-        {
-            name: 'Parque Norte',
-            location: { lat: -23.5587, lng: -46.6253 },
-            address: 'Avenida Norte, 456',
-            spaces: 200
-        },
-        {
-            name: 'Estacionamento Sul',
-            location: { lat: -23.5647, lng: -46.6396 },
-            address: 'Rua Sul, 789',
-            spaces: 100
+    const service = new google.maps.places.PlacesService(map);
+    
+    const request = {
+        location: center,
+        radius: '5000',
+        type: ['parking']
+    };
+
+    service.nearbySearch(request, (results, status) => {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+            results.forEach(place => {
+                const marker = new google.maps.Marker({
+                    position: place.geometry.location,
+                    map: map,
+                    title: place.name
+                });
+
+                const infoWindow = new google.maps.InfoWindow({
+                    content: `<div>
+                                <h2>${place.name}</h2>
+                                <p>Endereço: ${place.vicinity}</p>
+                              </div>`
+                });
+
+                marker.addListener('click', () => {
+                    infoWindow.open(map, marker);
+                });
+            });
+        } else {
+            console.error('Erro ao buscar lugares: ' + status);
         }
-    ];
-
-    parkingLots.forEach(lot => {
-        const marker = new google.maps.Marker({
-            position: lot.location,
-            map: map,
-            title: lot.name
-        });
-
-        const infoWindow = new google.maps.InfoWindow({
-            content: `<div>
-                        <h2>${lot.name}</h2>
-                        <p>Endereço: ${lot.address}</p>
-                        <p>Vagas: ${lot.spaces}</p>
-                      </div>`
-        });
-
-        marker.addListener('click', () => {
-            infoWindow.open(map, marker);
-        });
     });
 }

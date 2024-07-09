@@ -7,13 +7,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Função para buscar dados dos parques de estacionamento
     function fetchParkingLots() {
+        const bounds = map.getBounds();
         const overpassUrl = 'https://overpass-api.de/api/interpreter';
         const overpassQuery = `
             [out:json];
             (
-                node["amenity"="parking"](${map.getBounds().getSouth()},${map.getBounds().getWest()},${map.getBounds().getNorth()},${map.getBounds().getEast()});
-                way["amenity"="parking"](${map.getBounds().getSouth()},${map.getBounds().getWest()},${map.getBounds().getNorth()},${map.getBounds().getEast()});
-                relation["amenity"="parking"](${map.getBounds().getSouth()},${map.getBounds().getWest()},${map.getBounds().getNorth()},${map.getBounds().getEast()});
+                node["amenity"="parking"](${bounds.getSouth()},${bounds.getWest()},${bounds.getNorth()},${bounds.getEast()});
+                way["amenity"="parking"](${bounds.getSouth()},${bounds.getWest()},${bounds.getNorth()},${bounds.getEast()});
+                relation["amenity"="parking"](${bounds.getSouth()},${bounds.getWest()},${bounds.getNorth()},${bounds.getEast()});
             );
             out center;
         `;

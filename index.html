@@ -3,20 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Parques de Estacionamento no Mapa Fueler</title>
+    <title>Parques de Estacionamento no Mapa</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="styles.css">
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBkJNgwZSewsgmHnEXB-s1ANLJJkVfRyYE&callback=initMap" async defer></script>
 </head>
 <body>
-    <header>
+    <header class="bg-success text-white text-center py-3">
         <h1>Parques de Estacionamento no Mapa</h1>
     </header>
-    <main>
+    <main class="container my-4">
         <div id="map"></div>
     </main>
-    <footer>
+    <footer class="bg-success text-white text-center py-3">
         <p>&copy; 2024 Parques de Estacionamento</p>
     </footer>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

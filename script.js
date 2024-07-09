@@ -1,41 +1,51 @@
-function initMap() {
-    const center = { lat: -23.5505, lng: -46.6333 }; // Coordenadas de São Paulo, Brasil
+document.addEventListener('DOMContentLoaded', function() {
+    const map = L.map('map').setView([-23.5505, -46.6333], 14); // Coordenadas de São Paulo, Brasil
 
-    const map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 14,
-        center: center
-    });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
 
-    const service = new google.maps.places.PlacesService(map);
-    
-    const request = {
-        location: center,
-        radius: '5000',
-        type: ['parking']
-    };
+    // Função para buscar dados dos parques de estacionamento
+    function fetchParkingLots() {
+        const overpassUrl = 'https://overpass-api.de/api/interpreter';
+        const overpassQuery = `
+            [out:json];
+            (
+                node["amenity"="parking"](${map.getBounds().getSouth()},${map.getBounds().getWest()},${map.getBounds().getNorth()},${map.getBounds().getEast()});
+                way["amenity"="parking"](${map.getBounds().getSouth()},${map.getBounds().getWest()},${map.getBounds().getNorth()},${map.getBounds().getEast()});
+                relation["amenity"="parking"](${map.getBounds().getSouth()},${map.getBounds().getWest()},${map.getBounds().getNorth()},${map.getBounds().getEast()});
+            );
+            out center;
+        `;
 
-    service.nearbySearch(request, (results, status) => {
-        if (status === google.maps.places.PlacesServiceStatus.OK) {
-            results.forEach(place => {
-                const marker = new google.maps.Marker({
-                    position: place.geometry.location,
-                    map: map,
-                    title: place.name
+        fetch(`${overpassUrl}?data=${encodeURIComponent(overpassQuery)}`)
+            .then(response => response.json())
+            .then(data => {
+                data.elements.forEach(element => {
+                    const lat = element.lat || element.center.lat;
+                    const lon = element.lon || element.center.lon;
+                    const name = element.tags.name || 'Estacionamento';
+                    const address = element.tags['addr:street'] || 'Endereço não disponível';
+
+                    const marker = L.marker([lat, lon]).addTo(map);
+                    const popupContent = `<div>
+                                            <h5>${name}</h5>
+                                            <p><strong>Endereço:</strong> ${address}</p>
+                                          </div>`;
+                    marker.bindPopup(popupContent);
                 });
-
-                const infoWindow = new google.maps.InfoWindow({
-                    content: `<div>
-                                <h2>${place.name}</h2>
-                                <p>Endereço: ${place.vicinity}</p>
-                              </div>`
-                });
-
-                marker.addListener('click', () => {
-                    infoWindow.open(map, marker);
-                });
+            })
+            .catch(error => {
+                console.error('Erro ao buscar dados dos estacionamentos:', error);
             });
-        } else {
-            console.error('Erro ao buscar lugares: ' + status);
-        }
-    });
-}
+    }
+
+    // Buscar dados dos estacionamentos quando o mapa é carregado
+    map.on('load', fetchParkingLots);
+
+    // Buscar dados dos estacionamentos quando o mapa é movido
+    map.on('moveend', fetchParkingLots);
+
+    // Carregar dados iniciais
+    fetchParkingLots();
+});

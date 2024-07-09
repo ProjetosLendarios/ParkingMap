@@ -13,7 +13,6 @@ header {
 }
 
 main {
-    padding: 20px;
     display: flex;
     justify-content: center;
 }
@@ -22,15 +21,16 @@ main {
     height: 500px;
     width: 100%;
     max-width: 800px;
+    border: 2px solid #4CAF50;
+    border-radius: 5px;
 }
 
 footer {
-    text-align: center;
-    padding: 10px;
     background-color: #4CAF50;
     color: white;
+    text-align: center;
+    padding: 10px;
     position: fixed;
     width: 100%;
     bottom: 0;
 }
-

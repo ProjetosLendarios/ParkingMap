@@ -2,7 +2,7 @@ function initMap() {
     const mapOptions = {
         zoom: 12,
         center: { lat: -23.5505, lng: -46.6333 } // Coordenadas de São Paulo, Brasil
-    };
+    };     
 
     const map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
